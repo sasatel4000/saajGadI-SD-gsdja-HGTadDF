@@ -49,19 +49,26 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     fetch("https://ipwhois.app/json/")
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`Ошибка HTTP: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
+        if (!data.ip) throw new Error("IP не найден в ответе API");
+
         const ipData = {
-          ip: data.query,
-          country: data.country,
-          region: data.regionName,
-          city: data.city,
-          isp: data.isp,
+          ip: data.ip,
+          country: data.country || "неизвестно",
+          region: data.region || "неизвестно",
+          city: data.city || "неизвестно",
+          isp: data.isp || "неизвестно",
           time: new Date().toISOString()
         };
-        db.ref("ips").push(ipData)
-          .then(() => console.log("Данные записаны"))
-          .catch(err => console.error("Ошибка записи:", err));
+          
+        return db.ref("ips").push(ipData);
+      })
+      .catch(err => {
+        console.error("Ошибка:", err);
       });
   </script>
     </body>
