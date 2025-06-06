@@ -48,7 +48,7 @@
 };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    fetch("https://ipapi.com/json/")
+    fetch("https://ipapi.co/json/")
       .then(res => res.json())
       .then(data => {
         const ipData = {
