@@ -48,7 +48,7 @@
 };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    fetch("https://ip-api.com/json/")
+    fetch("https://ipwhois.app/json/")
       .then(res => res.json())
       .then(data => {
         const ipData = {
