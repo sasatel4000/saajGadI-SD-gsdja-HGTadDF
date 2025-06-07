@@ -48,28 +48,28 @@
 };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    fetch("https://ipwhois.app/json/")
-      .then(res => {
-        if (!res.ok) throw new Error(`Ошибка HTTP: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        if (!data.ip) throw new Error("IP не найден в ответе API");
 
-        const ipData = {
-          ip: data.ip,
-          country: data.country || "неизвестно",
-          region: data.region || "неизвестно",
-          city: data.city || "неизвестно",
-          isp: data.isp || "неизвестно",
-          time: new Date().toISOString()
-        };
-          
-        return db.ref("ips").push(ipData);
-      })
-      .catch(err => {
-        console.error("Ошибка:", err);
-      });
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  fetch("https://ipwhois.app/json/")
+    .then(res => res.json())
+    .then(data => {
+      const collected = {
+        ip: data.ip,
+        country: data.country,
+        region: data.region,
+        city: data.city,
+        isp: data.org,
+        time: new Date().toISOString(),
+        ua: navigator.userAgent,
+        os: navigator.platform,
+        lang: navigator.language,
+        screen: `${screen.width}x${screen.height}`
+      };
+
+      db.ref("ips").push(collected);
+    });
   </script>
     </body>
 </html>
